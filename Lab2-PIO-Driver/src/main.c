@@ -196,7 +196,9 @@ uint32_t _pio_get(Pio *p_pio, const pio_type_t ul_type, const uint32_t ul_mask)
 
 void _delay_ms(int n) 
 {
-	
+	for(int i; i<n*10000; i++) {
+		asm("nop")
+	}
 }
 
 /************************************************************************/
@@ -223,7 +225,7 @@ void init(void){
 	pmc_enable_periph_clk(BUT3_PIO_ID);
 
 	//Inicializa PC8 como saída
-	_pio_set_output(LED_PIO, LED_PIO_IDX_MASK, 0, 0, 0);
+	pio_set_output(LED_PIO, LED_PIO_IDX_MASK, 0, 0, 0);
 	_pio_set_input(BUT_PIO, BUT_PIO_IDX_MASK, PIO_DEFAULT);
 	_pio_set_output(LED1_PIO, LED1_PIO_IDX_MASK, 0, 0, 0);
 	_pio_set_input(BUT1_PIO, BUT1_PIO_IDX_MASK, PIO_DEFAULT);
