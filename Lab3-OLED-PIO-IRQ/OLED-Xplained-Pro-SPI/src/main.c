@@ -29,6 +29,9 @@ volatile int but1_time_pressed;
 volatile int but3_time_pressed;
 volatile int active = 1;
 
+int max_twitch = 30;
+volatile int current_twitch = 0;
+
 void twitch(void);
 void but1_callback(void);
 void but1_pressed(void);
@@ -44,6 +47,11 @@ void twitch()
 	delay_ms(delay_ms);
 	pio_set(LED_PIO, LED_PIO_IDX_MASK);
 	delay_ms(delay_ms);
+	
+	current_twitch += 1;
+	
+	double w = ((double)current_twitch / max_twitch)*120;
+	gfx_mono_generic_draw_filled_rect(1, 0, w, 5, 1);
 }
 
 void but1_callback() {
@@ -73,7 +81,7 @@ void but1_released() {
 	
 	char str[128];
 	sprintf(str, "%d", freq);
-	gfx_mono_draw_string("       ", 50,16, &sysfont);
+	gfx_mono_draw_string("   ", 50,16, &sysfont);
 	gfx_mono_draw_string(str, 50,16, &sysfont);
 }
 
@@ -94,7 +102,7 @@ void but3_released() {
 	
 	char str[128];
 	sprintf(str, "%d", freq);
-	gfx_mono_draw_string("       ", 50,16, &sysfont);
+	gfx_mono_draw_string("   ", 50,16, &sysfont);
 	gfx_mono_draw_string(str, 50,16, &sysfont);
 }
 
@@ -189,10 +197,11 @@ int main (void)
 	char str[128];
 	sprintf(str, "%d", freq);
 	gfx_mono_draw_string(str, 50,16, &sysfont);
+	gfx_mono_draw_string("Hz", 100,16, &sysfont);
   
 	while(1)
 	{	
-		if (active) {
+		if (active && current_twitch <= max_twitch) {
 			twitch();
 		}
 	}
