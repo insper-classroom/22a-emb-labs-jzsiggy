@@ -18,6 +18,13 @@ typedef struct  {
 
 /************************************************************************/
 
+#define LED_PIO           PIOC
+#define LED_PIO_ID        ID_PIOC
+#define LED_PIO_IDX       8
+#define LED_PIO_IDX_MASK  (1 << LED_PIO_IDX)
+
+/************************************************************************/
+
 #define LED1_PIO           PIOA
 #define LED1_PIO_ID        ID_PIOA
 #define LED1_PIO_IDX       0
@@ -77,6 +84,17 @@ void TC1_Handler(void) {
 
 	/** Muda o estado do LED (pisca) **/
 	pin_toggle(LED1_PIO, LED1_PIO_IDX_MASK);  
+}
+
+void TC2_Handler(void) {
+	/**
+	* Devemos indicar ao TC que a interrupção foi satisfeita.
+	* Isso é realizado pela leitura do status do periférico
+	**/
+	volatile uint32_t status = tc_get_status(TC0, 2);
+
+	/** Muda o estado do LED (pisca) **/
+	pin_toggle(LED_PIO, LED_PIO_IDX_MASK);  
 }
 
 void TC5_Handler(void) {
@@ -219,6 +237,9 @@ void but1_callback() {
 }
 
 void init() {
+	pmc_enable_periph_clk(LED_PIO_ID);
+	pio_set_output(LED_PIO, LED_PIO_IDX_MASK, 1, 0, 0);
+	
 	pmc_enable_periph_clk(LED1_PIO_ID);
 	pio_set_output(LED1_PIO, LED1_PIO_IDX_MASK, 1, 0, 0);
 	
@@ -265,6 +286,9 @@ int main (void)
 	
 	TC_init(TC0, ID_TC1, 1, 8);
 	tc_start(TC0, 1);
+	
+	TC_init(TC0, ID_TC2, 2, 5);
+	tc_start(TC0, 2);
 	
 	TC_init(TC1, ID_TC5, 2, 16);
 	
