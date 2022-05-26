@@ -5,6 +5,15 @@
 #include "driver/include/m2m_wifi.h"
 #include "socket/include/socket.h"
 #include "util.h"
+#include <stdio.h>
+
+/************************************************************************/
+/* PLACA                                                                */
+/************************************************************************/
+#define LED_PIO PIOC
+#define LED_PIO_ID ID_PIOC
+#define LED_IDX 8
+#define LED_IDX_MASK (1 << LED_IDX)
 
 /************************************************************************/
 /* WIFI                                                                 */
@@ -285,6 +294,17 @@ static void task_process(void *pvParameters) {
         printf(p_recvMsg->pu8Buffer);
         printf(STRING_EOL);  printf(STRING_LINE);
         state = DONE;
+		
+		char *ret = strstr(p_recvMsg->pu8Buffer, "led");
+		char led_status = *(ret + 7);
+
+		printf("The LED status is: %c\n", led_status);
+		
+		if (led_status == '1') {
+			pio_clear(LED_PIO, LED_IDX_MASK);
+		} else if (led_status == '0') {
+			pio_set(LED_PIO, LED_IDX_MASK);
+		}
       }
       else {
         state = TIMEOUT;
@@ -373,11 +393,24 @@ static void task_wifi(void *pvParameters) {
   }
 }
 
+void io_init(void) {
+	pmc_enable_periph_clk(LED_PIO_ID);
+
+	pio_configure(LED_PIO, PIO_OUTPUT_0, LED_IDX_MASK, PIO_DEFAULT);
+	
+	pio_set(LED_PIO, LED_IDX_MASK);
+}
+
+/************************************************************************/
+/* main                                                                 */
+/************************************************************************/
+
 int main(void)
 {
   /* Initialize the board. */
   sysclk_init();
   board_init();
+  io_init();
 
   /* Initialize the UART console. */
   configure_console();

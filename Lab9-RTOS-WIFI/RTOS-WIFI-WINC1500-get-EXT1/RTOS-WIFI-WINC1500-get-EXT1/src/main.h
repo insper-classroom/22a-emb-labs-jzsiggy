@@ -1,3 +1,5 @@
+
+   
 /**
  * \file
  *
@@ -48,15 +50,15 @@ extern "C" {
 #include "driver/include/m2m_wifi.h"
 
 /** Wi-Fi Settings */
-#define MAIN_WLAN_SSID                    "#EleNao" /**< Destination SSID */
+#define MAIN_WLAN_SSID                    "compemb" /**< Destination SSID */
 #define MAIN_WLAN_AUTH                    M2M_WIFI_SEC_WPA_PSK /**< Security manner */
-#define MAIN_WLAN_PSK                     "1223334444" /**< Password for Destination SSID */
+#define MAIN_WLAN_PSK                     "11223344" /**< Password for Destination SSID */
 
 /** Using broadcast address for simplicity. */
 #define MAIN_SERVER_PORT                    (5000)
 
 /** Weather information provider server. */
-#define MAIN_SERVER_NAME                    "192.168.0.138"
+#define MAIN_SERVER_NAME                    "192.168.50.189"
 
 /** IP address parsing. */
 #define IPV4_BYTE(val, index)               ((val >> (index * 8)) & 0xFF)
